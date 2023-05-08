@@ -1,12 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaTimes, FaCheck, FaInfoCircle } from "react-icons/fa";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 
-// const REGISTER_URL = "/register";
-
-const Register = () => {
+const ModifyRegister = () => {
   const userRef = useRef();
   const errorRef = useRef();
 
@@ -248,4 +246,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default ModifyRegister;
