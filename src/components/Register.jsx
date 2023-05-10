@@ -31,15 +31,15 @@ const Register = () => {
 
   useEffect(() => {
     const result = USER_REGEX.test(user);
-    console.log(result);
-    console.log(user);
+    // console.log(result);
+    // console.log(user);
     setValidName(result);
     // setValidName(USER_REGEX.text(user));
   }, [user]);
 
   useEffect(() => {
     const result = PWD_REGEX.test(pwd);
-    console.log(result);
+    // console.log(result);
     console.log(pwd);
     setValidPwd(result);
     // setValidPwd(PWD_REGEX.text(pwd));

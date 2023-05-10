@@ -20,9 +20,16 @@ const ModifyRegister = () => {
     focusMatch: false,
   };
 
+  const actionTypes = {
+    INPUT: "INPUT",
+    PASSWORD: "PASSWORD",
+    FOCUS: "FOCUS",
+    MATCH: "MATCH",
+  };
+
   const reducer = (state, action) => {
     switch (action.type) {
-      case "INPUT":
+      case actionTypes.INPUT:
         return {
           ...state,
           [action.payload.name]: action.payload.value,
@@ -30,22 +37,22 @@ const ModifyRegister = () => {
             action.payload.value
           ),
         };
-      case "PASSWORD":
+      case actionTypes.PASSWORD:
         return {
           ...state,
           [action.payload.name]: action.payload.value,
           [action.payload.valid]: action.payload.regex.test(
             action.payload.value
           ),
-          validMatch: action.payload.value === state.matchpassword,
+          validMatch: action.payload.value === state.matchPassword,
         };
-      case "MATCH":
+      case actionTypes.MATCH:
         return {
           ...state,
           [action.payload.name]: action.payload.value,
           [action.payload.valid]: state.password === action.payload.value,
         };
-      case "FOCUS":
+      case actionTypes.FOCUS:
         return {
           ...state,
           [action.payload.name]: action.payload.value,
