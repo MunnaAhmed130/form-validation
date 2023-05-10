@@ -1,6 +1,6 @@
 import "./App.css";
 import ModifyRegister from "./components/ModifyRegister";
-// import Register from "./components/Register";
+import Register from "./components/Register";
 
 function App() {
   return (

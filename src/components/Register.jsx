@@ -210,13 +210,13 @@ const Register = () => {
               className="text-xl p-1 rounded-lg text-black"
               onChange={(e) => setMatchPwd(e.target.value)}
               aria-invalid={validPwd ? "false" : "true"}
-              aria-describedby="pwdnote"
+              aria-describedby="confirmnote"
               onFocus={() => setMatchFocus(true)}
               onBlur={() => setMatchFocus(false)}
               required
             />
             <p
-              id="pwdnote"
+              id="confirmnote"
               className={
                 matchFocus && !validMatch
                   ? "text-xs rounded-lg bg-black text-white relative -bottom-3 p-1"

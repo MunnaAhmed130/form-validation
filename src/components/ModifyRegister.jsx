@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { FaTimes, FaCheck, FaInfoCircle } from "react-icons/fa";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
@@ -8,57 +8,78 @@ const ModifyRegister = () => {
   const userRef = useRef();
   const errorRef = useRef();
 
-  const [user, setUser] = useState("");
-  const [validName, setValidName] = useState(false);
-  const [userFocus, setUserFocus] = useState(false);
+  const initialState = {
+    username: "",
+    validName: false,
+    focusName: false,
+    password: "",
+    validPassword: false,
+    focusPassword: false,
+    matchPassword: "",
+    validMatch: false,
+    focusMatch: false,
+  };
 
-  const [pwd, setPwd] = useState("");
-  const [validPwd, setValidPwd] = useState(false);
-  const [pwdFocus, setPwdFocus] = useState(false);
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case "INPUT":
+        return {
+          ...state,
+          [action.payload.name]: action.payload.value,
+          [action.payload.valid]: action.payload.regex.test(
+            action.payload.value
+          ),
+        };
+      case "PASSWORD":
+        return {
+          ...state,
+          [action.payload.name]: action.payload.value,
+          [action.payload.valid]: action.payload.regex.test(
+            action.payload.value
+          ),
+          validMatch: action.payload.value === state.matchpassword,
+        };
+      case "MATCH":
+        return {
+          ...state,
+          [action.payload.name]: action.payload.value,
+          [action.payload.valid]: state.password === action.payload.value,
+        };
+      case "FOCUS":
+        return {
+          ...state,
+          [action.payload.name]: action.payload.value,
+        };
+      default:
+        return state;
+    }
+  };
 
-  const [matchPwd, setMatchPwd] = useState("");
-  const [validMatch, setValidMatch] = useState(false);
-  const [matchFocus, setMatchFocus] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  console.log(state.password, state.matchPassword);
 
   const [errorMsg, setErrorMsg] = useState("");
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    // onLoad focus on username input
     userRef.current.focus();
   }, []);
 
   useEffect(() => {
-    const result = USER_REGEX.test(user);
-    console.log(result);
-    console.log(user);
-    setValidName(result);
-    // setValidName(USER_REGEX.text(user));
-  }, [user]);
-
-  useEffect(() => {
-    const result = PWD_REGEX.test(pwd);
-    console.log(result);
-    console.log(pwd);
-    setValidPwd(result);
-    // setValidPwd(PWD_REGEX.text(pwd));
-    // setValidMatch(pwd === matchPwd);
-    const match = pwd === matchPwd;
-    setValidMatch(match);
-  }, [pwd, matchPwd]);
-
-  useEffect(() => {
     setErrorMsg("");
-  }, [user, pwd, matchPwd]);
+  }, [state.username, state.password, state.matchPassword]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const v1 = USER_REGEX.test(user);
-    const v2 = PWD_REGEX.test(pwd);
-    if (!v1 || !v2) {
+    const v1 = USER_REGEX.test(state.username);
+    const v2 = PWD_REGEX.test(state.password);
+    const v3 = state.password === state.matchPassword;
+    if (!v1 || !v2 || !v3) {
       setErrorMsg("invalid Entry");
       return;
     }
-    console.log(user, pwd);
+    // console.log(state.user, state.password);
     setSuccess(true);
   };
 
@@ -81,23 +102,27 @@ const ModifyRegister = () => {
           >
             {errorMsg}
           </p>
-          <h1>Register</h1>
+          <h1 className="text-2xl text-center font-semibold uppercase">
+            Register
+          </h1>
           <form
             className="flex flex-col  flex-grow pb-4"
-            onSubmit={handleSubmit}
+            onSubmit={(e) => handleSubmit(e)}
           >
             <label htmlFor="username" className="mt-4 inline-block">
-              UserName:
+              Username:
               <span
                 className={
-                  validName ? "text-[limegreen] ml-1 inline-block" : "hidden"
+                  state.validName
+                    ? "text-[limegreen] ml-1 inline-block"
+                    : "hidden"
                 }
               >
                 <FaCheck />
               </span>
               <span
                 className={
-                  validName || !user
+                  state.validName || !state.username
                     ? "hidden"
                     : "text-orange-700 ml-1 inline-block"
                 }
@@ -108,20 +133,47 @@ const ModifyRegister = () => {
             <input
               type="text"
               id="username"
+              name="username"
               ref={userRef}
-              className="text-xl p-1 rounded-lg text-black"
+              className="text-xl py-1 px-2 rounded-lg text-black focus-visible:outline-none"
               autoComplete="off"
-              onChange={(e) => setUser(e.target.value)}
-              aria-invalid={validName ? "false" : "true"}
+              onChange={(e) =>
+                dispatch({
+                  type: "INPUT",
+                  payload: {
+                    name: e.target.name,
+                    value: e.target.value,
+                    regex: USER_REGEX,
+                    valid: "validName",
+                  },
+                })
+              }
+              aria-invalid={state.validName ? "false" : "true"}
               aria-describedby="uidnote"
-              onFocus={() => setUserFocus(true)}
-              onBlur={() => setUserFocus(false)}
+              onFocus={() =>
+                dispatch({
+                  type: "FOCUS",
+                  payload: {
+                    name: "focusName",
+                    value: true,
+                  },
+                })
+              }
+              onBlur={() =>
+                dispatch({
+                  type: "FOCUS",
+                  payload: {
+                    name: "focusName",
+                    value: false,
+                  },
+                })
+              }
               required
             />
             <p
               id="uidnote"
               className={
-                userFocus && user && !validName
+                state.focusName && state.username && !state.validName
                   ? "text-xs rounded-lg bg-black text-white relative -bottom-3 p-1"
                   : "absolute left-[-9999px]"
               }
@@ -135,14 +187,16 @@ const ModifyRegister = () => {
               password:
               <span
                 className={
-                  validPwd ? "text-[limegreen] ml-1 inline-block" : "hidden"
+                  state.validPassword
+                    ? "text-[limegreen] ml-1 inline-block"
+                    : "hidden"
                 }
               >
                 <FaCheck />
               </span>
               <span
                 className={
-                  validPwd || !pwd
+                  state.validPassword || !state.password
                     ? "hidden"
                     : "text-orange-700 ml-1 inline-block"
                 }
@@ -153,18 +207,45 @@ const ModifyRegister = () => {
             <input
               type="password"
               id="password"
+              name="password"
               className="text-xl p-1 rounded-lg text-black"
-              onChange={(e) => setPwd(e.target.value)}
-              aria-invalid={validPwd ? "false" : "true"}
+              onChange={(e) =>
+                dispatch({
+                  type: "PASSWORD",
+                  payload: {
+                    name: e.target.name,
+                    value: e.target.value,
+                    regex: PWD_REGEX,
+                    valid: "validPassword",
+                  },
+                })
+              }
+              aria-invalid={state.validPassword ? "false" : "true"}
               aria-describedby="pwdnote"
-              onFocus={() => setPwdFocus(true)}
-              onBlur={() => setPwdFocus(false)}
+              onFocus={() =>
+                dispatch({
+                  type: "FOCUS",
+                  payload: {
+                    name: "focusPassword",
+                    value: true,
+                  },
+                })
+              }
+              onBlur={() =>
+                dispatch({
+                  type: "FOCUS",
+                  payload: {
+                    name: "focusPassword",
+                    value: false,
+                  },
+                })
+              }
               required
             />
             <p
               id="pwdnote"
               className={
-                pwdFocus && !validPwd
+                state.FocusPassword && !state.validPassword
                   ? "text-xs rounded-lg bg-black text-white relative -bottom-3 p-1"
                   : "absolute left-[-9999px]"
               }
@@ -180,12 +261,11 @@ const ModifyRegister = () => {
               <span aria-label="dollar sign">$</span>
               <span aria-label="percent">%</span>
             </p>
-
             <label htmlFor="confirm_password" className="mt-4 inline-block">
               Confirm Password:
               <span
                 className={
-                  validMatch && matchPwd
+                  state.validMatch && state.matchPassword
                     ? "text-[limegreen] ml-1 inline-block"
                     : "hidden"
                 }
@@ -194,7 +274,7 @@ const ModifyRegister = () => {
               </span>
               <span
                 className={
-                  validMatch || !matchPwd
+                  state.validMatch || !state.matchPassword
                     ? "hidden"
                     : "text-orange-700 ml-1 inline-block"
                 }
@@ -205,18 +285,44 @@ const ModifyRegister = () => {
             <input
               type="password"
               id="confirm_password"
+              name="matchPassword"
               className="text-xl p-1 rounded-lg text-black"
-              onChange={(e) => setMatchPwd(e.target.value)}
-              aria-invalid={validPwd ? "false" : "true"}
-              aria-describedby="pwdnote"
-              onFocus={() => setMatchFocus(true)}
-              onBlur={() => setMatchFocus(false)}
+              onChange={(e) =>
+                dispatch({
+                  type: "MATCH",
+                  payload: {
+                    name: e.target.name,
+                    value: e.target.value,
+                    valid: "validMatch",
+                  },
+                })
+              }
+              aria-invalid={state.validPassword ? "false" : "true"}
+              aria-describedby="confirmnote"
+              onFocus={() =>
+                dispatch({
+                  type: "FOCUS",
+                  payload: {
+                    name: "focusMatch",
+                    value: true,
+                  },
+                })
+              }
+              onBlur={() =>
+                dispatch({
+                  type: "FOCUS",
+                  payload: {
+                    name: "focusMatch",
+                    value: false,
+                  },
+                })
+              }
               required
             />
             <p
-              id="pwdnote"
+              id="confirmnote"
               className={
-                matchFocus && !validMatch
+                state.focusMatch && !state.validMatch
                   ? "text-xs rounded-lg bg-black text-white relative -bottom-3 p-1"
                   : "absolute left-[-9999px]"
               }
@@ -227,7 +333,11 @@ const ModifyRegister = () => {
 
             <button
               className="text-xl p-2 rounded-lg bg-gray-300 mt-6 text-black"
-              disabled={!validName || !validPwd || !validMatch ? true : false}
+              // disabled={
+              //   !state.validName || !state.validPassword || !state.validMatch
+              //     ? true
+              //     : false
+              // }
             >
               Sign Up
             </button>
