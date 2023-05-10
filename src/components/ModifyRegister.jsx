@@ -146,7 +146,7 @@ const ModifyRegister = () => {
               autoComplete="off"
               onChange={(e) =>
                 dispatch({
-                  type: "INPUT",
+                  type: actionTypes.INPUT,
                   payload: {
                     name: e.target.name,
                     value: e.target.value,
@@ -159,7 +159,7 @@ const ModifyRegister = () => {
               aria-describedby="uidnote"
               onFocus={() =>
                 dispatch({
-                  type: "FOCUS",
+                  type: actionTypes.FOCUS,
                   payload: {
                     name: "focusName",
                     value: true,
@@ -168,7 +168,7 @@ const ModifyRegister = () => {
               }
               onBlur={() =>
                 dispatch({
-                  type: "FOCUS",
+                  type: actionTypes.FOCUS,
                   payload: {
                     name: "focusName",
                     value: false,
@@ -218,7 +218,7 @@ const ModifyRegister = () => {
               className="text-xl p-1 rounded-lg text-black"
               onChange={(e) =>
                 dispatch({
-                  type: "PASSWORD",
+                  type: actionTypes.PASSWORD,
                   payload: {
                     name: e.target.name,
                     value: e.target.value,
@@ -231,7 +231,7 @@ const ModifyRegister = () => {
               aria-describedby="pwdnote"
               onFocus={() =>
                 dispatch({
-                  type: "FOCUS",
+                  type: actionTypes.FOCUS,
                   payload: {
                     name: "focusPassword",
                     value: true,
@@ -240,7 +240,7 @@ const ModifyRegister = () => {
               }
               onBlur={() =>
                 dispatch({
-                  type: "FOCUS",
+                  type: actionTypes.FOCUS,
                   payload: {
                     name: "focusPassword",
                     value: false,
@@ -296,7 +296,7 @@ const ModifyRegister = () => {
               className="text-xl p-1 rounded-lg text-black"
               onChange={(e) =>
                 dispatch({
-                  type: "MATCH",
+                  type: actionTypes.MATCH,
                   payload: {
                     name: e.target.name,
                     value: e.target.value,
@@ -308,7 +308,7 @@ const ModifyRegister = () => {
               aria-describedby="confirmnote"
               onFocus={() =>
                 dispatch({
-                  type: "FOCUS",
+                  type: actionTypes.FOCUS,
                   payload: {
                     name: "focusMatch",
                     value: true,
@@ -317,7 +317,7 @@ const ModifyRegister = () => {
               }
               onBlur={() =>
                 dispatch({
-                  type: "FOCUS",
+                  type: actionTypes.FOCUS,
                   payload: {
                     name: "focusMatch",
                     value: false,
